@@ -38,7 +38,7 @@ import subprocess
 
 # python package version
 # should match r"^__version__ = '(?P<version>[^']+)'$" for setup.py
-__version__ = '0.4.3'
+__version__ = '0.4.3.dg1'
 
 
 def which(program):
@@ -187,6 +187,30 @@ class Vagrant(object):
         force_opt = '--force' if force else None
         self._run_vagrant_command('halt', vm_name, force_opt, **kwargs)
         self._cached_conf[vm_name] = None  # remove cached configuration
+
+    ####################################################################### 
+    def package(self, base=None, output=None, include=None, vagrantfile=None,
+                vm_name=None, **kwargs):
+        '''
+        Package the Vagrant box. This may take a few minutes...
+
+        Usage: vagrant package [vm-name] [--base name] [--output name.box]
+                               [--include one,two,three] [--vagrantfile file]
+        
+        --base NAME         Name of a VM in virtualbox to package as a base box
+        --output NAME       Name of the file to output
+        --include x,y,z     Additional files to package with the box.
+        --vagrantfile file  Vagrantfile to package with the box.
+        '''
+        base_arg = '--base=%s' % base if base else None
+        output_arg = '--output=%s' % output if output else None
+        include_arg = '--include=%s' % include if include else None
+        vagrantfile_arg = '--vagrantfile=%s' % vagrantfile if vagrantfile \
+                          else None
+        self._run_vagrant_command('package', vm_name, base_arg, output_arg,
+                                  include_arg, vagrantfile_arg, **kwargs)
+        # self._cached_conf[vm_name] = None  # remove cached configuration
+    ####################################################################### 
 
     def destroy(self, vm_name=None, **kwargs):
         '''
